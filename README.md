@@ -5,7 +5,27 @@
 _qemu-compose_ is an attempt to implement a [`docker-compose`](https://docs.docker.com/compose/) 
 equivalent for running [QEMU](https://www.qemu.org) VMs on Linux.
 
-This project is still in the prototype stage.
+This project is very young, I think it is in a functional state but for now I am the only one who has tested it, only on Fedora 42.
+
+Explanation of the project in the form of a simple example.
+
+A file that looks like a `docker-compose.yml`:
+
+```yaml
+# qemu-compose.yaml
+version: "1.0"
+vms:
+  fedora-vm:
+    image: https://download.fedoraproject.org/pub/fedora/linux/releases/42/Cloud/x86_64/images/Fedora-Cloud-Base-Generic-42-1.1.x86_64.qcow2
+    cpu: 2
+    memory: 2048
+```
+
+```sh
+$ qemu-compose up
+$ qemu-compose ssh fedora-vm
+...
+```
 
 ## Why I created this project
 
