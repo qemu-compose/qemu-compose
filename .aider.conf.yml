@@ -1,0 +1,25 @@
+model: openrouter/anthropic/claude-sonnet-4.5
+editor-model: openrouter/anthropic/claude-sonnet-4.5
+weak-model: openrouter/anthropic/claude-haiku-4.5
+
+auto-commits: false
+dirty-commits: false
+attribute-author: true
+attribute-committer: true
+
+git: true
+gitignore: false
+
+dark-mode: true
+pretty: true
+
+stream: true
+
+read: AGENTS.md
+
+chat-language: english
+commit-language: english
+
+cache-prompts: true
+cache-keepalive-pings: 3
+notifications: true

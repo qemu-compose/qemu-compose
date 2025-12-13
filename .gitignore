@@ -1,5 +1,8 @@
 .secret
-.aider*
+.aider.chat.history.md
+.aider.input.history
+.aider.tags.cache.v4
+.aider.tags.cache.v8
 
 # qemu-compose project data
 .qemu-compose/
