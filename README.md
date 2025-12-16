@@ -53,46 +53,15 @@ was missing a simple, declarative configuration format like `docker-compose.yaml
 **qemu-compose** attempts to fill this gap: a readable YAML format for orchestrating QEMU VMs,
 without excessive abstraction layers, implemented in Go.
 
-## Prerequisites
+## Installation
 
-### Installing Mise on Fedora Workstation
-
-This project uses [Mise](https://mise.jdx.dev/) to manage the Go toolchain and project dependencies.
-
-To install Mise on Fedora Workstation:
+Execute this command to install `qemu-compose` to `~/bin/qemu-compose`:
 
 ```bash
-# Install mise using the official installer
-$ curl https://mise.run | sh
-
-# Add mise to your shell (for bash)
-$ echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc
-$ source ~/.bashrc
-
-# Or for zsh
-$ echo 'eval "$(~/.local/bin/mise activate zsh)"' >> ~/.zshrc
-$ source ~/.zshrc
+$ curl -s https://raw.githubusercontent.com/stephane-klein/qemu-compose/main/install.sh | bash
 ```
 
-Once Mise is installed, navigate to the project directory and run:
-
-```bash
-$ mise trust
-$ mise install
-```
-
-This will automatically install the Go toolchain version specified in `.mise.toml`.
-
-## Getting Started
-
-Build the project:
-
-```bash
-$ mise run build
-[build] $ go build -o qemu-compose ./src
-```
-
-Run the binary:
+## Usage
 
 ```bash
 $ qemu-compose --help
@@ -130,20 +99,21 @@ There are three ways to specify which compose file to use, in order of precedenc
 
 1. **Command-line flag** (highest priority):
 
-   ```bash
-   $ qemu-compose -f /path/to/my-compose.yaml up
-   ```
+```bash
+$ qemu-compose -f /path/to/my-compose.yaml up
+```
 
 2. **Environment variable**:
 
-   ```bash
-   $ export QEMU_COMPOSE_FILE=/path/to/my-compose.yaml
-   $ qemu-compose up
-   ```
+```bash
+$ export QEMU_COMPOSE_FILE=/path/to/my-compose.yaml
+$ qemu-compose up
+```
 
 3. **Default files** (lowest priority):
-   - `qemu-compose.yaml`
-   - `qemu-compose.yml`
+
+- `qemu-compose.yaml`
+- `qemu-compose.yml`
 
 When using Mise for development, the `QEMU_COMPOSE_FILE` environment variable is automatically set
 to `./examples/qemu-compose.yaml` (see `.mise.toml`).
@@ -972,6 +942,14 @@ dnsmasq unit naming:
 - Relative paths resolved relative to compose file location
 - Absolute paths used as-is
 - Can be disabled from auto-mounting with `automount: false`
+
+## Contributing
+
+We welcome contributions to qemu-compose! If you're interested in helping improve the project, please read our
+[CONTRIBUTING.md](CONTRIBUTING.md) file for detailed guidelines on:
+
+- Setting up your development environment
+- Building the project
 
 ## Development approach
 
