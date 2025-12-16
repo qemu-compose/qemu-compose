@@ -36,3 +36,53 @@ run = "rm -rf ./bin/"
 [tasks.fmt]
 description = "Format Go code"
 run = "go fmt ./src/..."
+
+[tasks.aider_grok]
+description = "Start Aider with Grok model"
+run = "aider --model=openrouter/x-ai/grok-code-fast-1"
+
+[tasks.aider_deepseek]
+description = "Start Aider with DeepSeek model"
+run = "aider --model=openrouter/deepseek/deepseek-v3.2"
+
+[tasks.aider_haiku_simple]
+description = "Start Aider with Claude Haiku model (limited context for quick edits)"
+run = "aider --model=openrouter/anthropic/claude-haiku-4.5 --map-tokens=1024"
+
+[tasks.aider_haiku_architect]
+description = "Start Aider with Claude Haiku model (extended context for design discussions)"
+run = "aider --model=openrouter/anthropic/claude-haiku-4.5 --map-tokens=8192"
+
+[tasks.aider_sonnet]
+description = "Start Aider with Claude Sonnet model (full context, balanced performance)"
+run = "aider --model=openrouter/anthropic/claude-sonnet-4.5"
+
+[tasks.aider_sonnet_simple]
+description = "Start Aider with Claude Sonnet model (limited context for focused tasks)"
+run = "aider --model=openrouter/anthropic/claude-sonnet-4.5 --map-tokens=1024"
+
+[tasks.aider_sonnet_architect]
+description = "Start Aider with Claude Sonnet model (extended context for complex refactoring)"
+run = "aider --model=openrouter/anthropic/claude-sonnet-4.5 --map-tokens=8192"
+
+[tasks.aider_compare_model_prices]
+description = "Compare pricing of different Aider models"
+run = """
+MODELS="grok-code-fast-1|deepseek-v3.2|claude-haiku-4.5|claude-sonnet-4.5"
+
+printf "%-50s %-25s %-25s\n" "MODEL" "PROMPT ($/1M tokens)" "COMPLETION ($/1M tokens)"
+printf "%-50s %-25s %-25s\n" "-----" "--------------------" "-----------------------"
+
+curl -s https://openrouter.ai/api/v1/models | \
+  jq -r --arg models "$MODELS" '.data[] | 
+    select(.id | test($models)) |
+    [
+      .id,
+      ("$" + ((.pricing.prompt | tonumber) * 1000000 | tostring)),
+      ("$" + ((.pricing.completion | tonumber) * 1000000 | tostring))
+    ] | 
+    @tsv' | \
+  while IFS=$'\t' read -r model prompt completion; do
+    printf "%-50s %-25s %-25s\n" "$model" "$prompt" "$completion"
+  done
+"""
