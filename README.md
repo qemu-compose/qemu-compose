@@ -27,6 +27,17 @@ $ qemu-compose ssh fedora-vm
 ...
 ```
 
+## Features
+
+- Docker-compose-like YAML syntax for defining VMs, networks, and volumes
+- VM image pulling
+- VM creation and configuration using cloud-init for OS setup
+- VMs launched via systemd-run as user units for lifecycle management
+- Console access to VMs via serial sockets
+- Automatic SSH access with generated key pairs
+- Bridge networking (optional) with DHCP/DNS via dnsmasq
+- Volume mounting including named volumes and bind mounts
+
 ## Why I created this project
 
 I've been using [Vagrant](https://developer.hashicorp.com/vagrant) since 2012 and appreciate its approach,
