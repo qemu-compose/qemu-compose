@@ -2,10 +2,11 @@
 
 # qemu-compose
 
-_qemu-compose_ is an attempt to implement a [`docker-compose`](https://docs.docker.com/compose/) 
+_qemu-compose_ is an attempt to implement a [`docker-compose`](https://docs.docker.com/compose/)
 equivalent for running [QEMU](https://www.qemu.org) VMs on Linux.
 
-This project is very young, I think it is in a functional state but for now I am the only one who has tested it, only on Fedora 42.
+This project is very young, I think it is in a functional state but for now I am the only one who
+has tested it, only on Fedora 42.
 
 Explanation of the project in the form of a simple example.
 
@@ -40,15 +41,15 @@ $ qemu-compose ssh fedora-vm
 
 ## Why I created this project
 
-I've been using [Vagrant](https://developer.hashicorp.com/vagrant) since 2012 and appreciate its approach,
-but I find the `Vagrantfile` format (Ruby) less intuitive than `docker-compose.yaml`.
-The modern infrastructure tooling ecosystem (Docker, Podman, Kubernetes, Terraform...) has adopted Go as the
-standard for system tools, while Vagrant remains rooted in Ruby.
-  
-I've also explored [libvirt](https://libvirt.org/) with `virt-manager` and `virt-install`. While powerful,
-these tools use verbose XML and their commands are far removed from native QEMU options. I was missing a simple,
-declarative configuration format like `docker-compose.yaml`.
-  
+I've been using [Vagrant](https://developer.hashicorp.com/vagrant) since 2012 and appreciate its
+approach, but I find the `Vagrantfile` format (Ruby) less intuitive than `docker-compose.yaml`. The
+modern infrastructure tooling ecosystem (Docker, Podman, Kubernetes, Terraform...) has adopted Go as
+the standard for system tools, while Vagrant remains rooted in Ruby.
+
+I've also explored [libvirt](https://libvirt.org/) with `virt-manager` and `virt-install`. While
+powerful, these tools use verbose XML and their commands are far removed from native QEMU options. I
+was missing a simple, declarative configuration format like `docker-compose.yaml`.
+
 **qemu-compose** attempts to fill this gap: a readable YAML format for orchestrating QEMU VMs,
 without excessive abstraction layers, implemented in Go.
 
@@ -128,11 +129,13 @@ Use "qemu-compose [command] --help" for more information about a command.
 There are three ways to specify which compose file to use, in order of precedence:
 
 1. **Command-line flag** (highest priority):
+
    ```bash
    $ qemu-compose -f /path/to/my-compose.yaml up
    ```
 
 2. **Environment variable**:
+
    ```bash
    $ export QEMU_COMPOSE_FILE=/path/to/my-compose.yaml
    $ qemu-compose up
@@ -142,7 +145,8 @@ There are three ways to specify which compose file to use, in order of precedenc
    - `qemu-compose.yaml`
    - `qemu-compose.yml`
 
-When using Mise for development, the `QEMU_COMPOSE_FILE` environment variable is automatically set to `./examples/qemu-compose.yaml` (see `.mise.toml`).
+When using Mise for development, the `QEMU_COMPOSE_FILE` environment variable is automatically set
+to `./examples/qemu-compose.yaml` (see `.mise.toml`).
 
 ### Checking System Dependencies
 
@@ -185,11 +189,13 @@ Total: 2 image(s)
 ```
 
 The `image ls` command displays:
+
 - The cache directory location (`~/.local/share/qemu-compose/images/`)
 - A table with filename, human-readable size, and full path for each cached image
 - Total count of cached images
 
 This is useful for:
+
 - Checking which images are already downloaded
 - Finding the full path to cached images
 - Verifying disk space usage
@@ -226,7 +232,8 @@ Force re-download even if the image already exists:
 $ qemu-compose pull --force
 ```
 
-Images are cached in `~/.local/share/qemu-compose/images/` and won't be re-downloaded if they already exist (unless you use the `--force` flag).
+Images are cached in `~/.local/share/qemu-compose/images/` and won't be re-downloaded if they
+already exist (unless you use the `--force` flag).
 
 ### Starting VMs
 
@@ -255,7 +262,8 @@ VM: ubuntu-vm
 ✓ All VMs started successfully
 ```
 
-VMs are managed by systemd as user units. Each VM runs in its own systemd unit with a predictable name pattern: `qemu-compose-<project>-<vm-name>`.
+VMs are managed by systemd as user units. Each VM runs in its own systemd unit with a predictable
+name pattern: `qemu-compose-<project>-<vm-name>`.
 
 ### Volume Support
 
@@ -263,7 +271,8 @@ qemu-compose supports two types of volumes:
 
 #### Named Volumes
 
-Named volumes are persistent storage managed by qemu-compose. They are created as qcow2 disk images, pre-formatted with ext4, and automatically mounted in VMs.
+Named volumes are persistent storage managed by qemu-compose. They are created as qcow2 disk images,
+pre-formatted with ext4, and automatically mounted in VMs.
 
 Example configuration:
 
@@ -282,7 +291,7 @@ vms:
     volumes:
       # Short form
       - postgres_data:/var/lib/postgresql/data
-      
+
       # Long form with read-only
       - source: app_data
         target: /mnt/shared
@@ -290,6 +299,7 @@ vms:
 ```
 
 Named volumes:
+
 - Are stored in `.qemu-compose/volumes/<volume-name>/`
 - Persist across VM lifecycles (survive `destroy` unless explicitly removed)
 - Are pre-formatted with ext4 filesystem
@@ -299,7 +309,8 @@ Named volumes:
 
 #### Bind Mounts
 
-Bind mounts allow you to mount host directories or files directly into VMs using 9p (virtio-9p) filesystem sharing.
+Bind mounts allow you to mount host directories or files directly into VMs using 9p (virtio-9p)
+filesystem sharing.
 
 Example configuration:
 
@@ -312,15 +323,15 @@ vms:
     volumes:
       # Short form - auto-mounted by default
       - ./config:/etc/myapp
-      
+
       # Short form with read-only flag
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      
+
       # Long form with auto-mount disabled
       - source: ./scripts
         target: /opt/scripts
         automount: false
-      
+
       # Long form with custom mount options
       - source: ./cache
         target: /var/cache/app
@@ -329,9 +340,11 @@ vms:
 ```
 
 Bind mounts:
+
 - Use 9p (virtio-9p) filesystem sharing
 - Support both relative and absolute paths
-- **Relative paths are resolved relative to the compose file location**, not the current working directory
+- **Relative paths are resolved relative to the compose file location**, not the current working
+  directory
 - Are auto-mounted by default via cloud-init
 - Can disable auto-mount with `automount: false` for manual mounting
 - Can specify custom 9p mount options
@@ -346,13 +359,13 @@ Bind mounts:
 volumes:
   # Named volume
   - volume_name:/path/in/vm
-  
+
   # Bind mount (relative path)
   - ./host/path:/path/in/vm
-  
+
   # Bind mount (absolute path)
   - /abs/host/path:/path/in/vm
-  
+
   # With read-only flag
   - ./config:/etc/app:ro
 ```
@@ -373,17 +386,22 @@ volumes:
 - `source` (required): Named volume name or host path (relative or absolute)
 - `target` (required): Mount path inside VM (must be absolute, starting with `/`)
 - `read_only` (optional): Boolean, default `false`. Makes the mount read-only
-- `automount` (optional): Boolean, default `true`. Only applies to bind mounts. When `false`, the volume is attached but not automatically mounted via cloud-init
-- `mount_options` (optional): String, custom 9p mount options. Only applies to bind mounts. Example: `"cache=loose,msize=104857600"`
+- `automount` (optional): Boolean, default `true`. Only applies to bind mounts. When `false`, the
+  volume is attached but not automatically mounted via cloud-init
+- `mount_options` (optional): String, custom 9p mount options. Only applies to bind mounts. Example:
+  `"cache=loose,msize=104857600"`
 
 **Auto-mount Behavior:**
 
 - **Named volumes:** Always auto-mounted via cloud-init (cannot be disabled)
 - **Bind mounts:** Auto-mounted by default, can be disabled with `automount: false`
-- When `automount: false`, the volume is still attached to QEMU with `-virtfs`, but cloud-init won't generate mount commands
+- When `automount: false`, the volume is still attached to QEMU with `-virtfs`, but cloud-init won't
+  generate mount commands
 - Users can manually mount with: `mount -t 9p -o trans=virtio,version=9p2000.L <mount_tag> <target>`
 
-**Important**: When using relative paths in bind mounts (e.g., `./config`), the path is resolved relative to the directory containing the compose YAML file, not the directory where you run the `qemu-compose` command. This ensures consistent behavior regardless of where you invoke the command.
+**Important**: When using relative paths in bind mounts (e.g., `./config`), the path is resolved
+relative to the directory containing the compose YAML file, not the directory where you run the
+`qemu-compose` command. This ensures consistent behavior regardless of where you invoke the command.
 
 The mount path inside the VM must always be an absolute path starting with `/`.
 
@@ -393,7 +411,8 @@ qemu-compose supports two networking modes:
 
 #### User-Mode Networking (Default)
 
-When no `networks:` are specified in the VM configuration, qemu-compose uses QEMU's user-mode networking with automatic SSH port forwarding. This mode:
+When no `networks:` are specified in the VM configuration, qemu-compose uses QEMU's user-mode
+networking with automatic SSH port forwarding. This mode:
 
 - Requires no special privileges
 - Automatically allocates SSH ports starting from 2222
@@ -413,7 +432,8 @@ vms:
 
 #### Bridge Networking with DHCP
 
-When `networks:` are specified, qemu-compose creates TAP devices and bridges for VM networking, and automatically starts a dnsmasq instance per network to provide DHCP and DNS services. This mode:
+When `networks:` are specified, qemu-compose creates TAP devices and bridges for VM networking, and
+automatically starts a dnsmasq instance per network to provide DHCP and DNS services. This mode:
 
 - Requires CAP_NET_ADMIN capability or sudo privileges
 - VMs automatically obtain IP addresses via DHCP
@@ -457,19 +477,23 @@ vms:
 
 **Automatic Subnet Allocation:**
 
-When `subnet: auto` is specified, qemu-compose automatically allocates a unique subnet from the `172.16.0.0/12` pool (172.16.0.0 - 172.31.255.255). This provides 4096 possible /24 subnets.
+When `subnet: auto` is specified, qemu-compose automatically allocates a unique subnet from the
+`172.16.0.0/12` pool (172.16.0.0 - 172.31.255.255). This provides 4096 possible /24 subnets.
 
-Allocated subnets are stored in `.qemu-compose/networks.json` and reused across restarts, ensuring consistency. Each network gets a unique subnet, avoiding conflicts.
+Allocated subnets are stored in `.qemu-compose/networks.json` and reused across restarts, ensuring
+consistency. Each network gets a unique subnet, avoiding conflicts.
 
 **DHCP and DNS Services:**
 
-Each network automatically gets its own dnsmasq instance running as a systemd user unit (`qemu-compose-dnsmasq-<project>-<network>`). This provides:
+Each network automatically gets its own dnsmasq instance running as a systemd user unit
+(`qemu-compose-dnsmasq-<project>-<network>`). This provides:
 
 - **DHCP**: Automatic IP address assignment to VMs
 - **DNS**: Hostname resolution between VMs on the same network
 - **Isolation**: Each network has its own DHCP/DNS namespace
 
 The dnsmasq instance:
+
 - Binds to the bridge interface for the network
 - Serves DHCP from a calculated range within the subnet
 - Provides DNS resolution for VM hostnames
@@ -491,7 +515,8 @@ $ sudo qemu-compose up
 
 ### Cloud-init Configuration
 
-qemu-compose automatically configures cloud-init for supported cloud images. The default credentials are:
+qemu-compose automatically configures cloud-init for supported cloud images. The default credentials
+are:
 
 - **Fedora Cloud images**: username `fedora`, password `password`
 - **Ubuntu Cloud images**: username `ubuntu`, password `password`
@@ -499,11 +524,13 @@ qemu-compose automatically configures cloud-init for supported cloud images. The
 - **CentOS Cloud images**: username `centos`, password `password`
 - **RHEL Cloud images**: username `cloud-user`, password `password`
 
-The OS type is automatically detected from the image URL. All users are configured with passwordless sudo access.
+The OS type is automatically detected from the image URL. All users are configured with passwordless
+sudo access.
 
 ### SSH Access
 
-qemu-compose automatically generates an SSH key pair for each project and configures VMs to accept it. The SSH key is stored at `.qemu-compose/ssh/id_ed25519`.
+qemu-compose automatically generates an SSH key pair for each project and configures VMs to accept
+it. The SSH key is stored at `.qemu-compose/ssh/id_ed25519`.
 
 #### Connecting via SSH (User-Mode Networking)
 
@@ -514,6 +541,7 @@ $ qemu-compose ssh fedora-vm
 ```
 
 This automatically:
+
 - Uses the project SSH key at `.qemu-compose/ssh/id_ed25519`
 - Connects to the correct port (allocated when the VM started)
 - Uses the appropriate default user for the VM's OS (fedora, ubuntu, debian, etc.)
@@ -526,7 +554,8 @@ $ ssh -i .qemu-compose/ssh/id_ed25519 -p 2222 fedora@localhost
 
 #### Connecting via SSH (Bridge Networking)
 
-For VMs using bridge networking, you need to connect directly to the VM's IP address on the bridge network. The `qemu-compose ssh` command is not available for bridge-networked VMs.
+For VMs using bridge networking, you need to connect directly to the VM's IP address on the bridge
+network. The `qemu-compose ssh` command is not available for bridge-networked VMs.
 
 First, find the VM's IP address (via console or DHCP logs), then connect:
 
@@ -534,7 +563,8 @@ First, find the VM's IP address (via console or DHCP logs), then connect:
 $ ssh -i .qemu-compose/ssh/id_ed25519 fedora@<vm-ip-address>
 ```
 
-The VM will have obtained its IP address automatically via DHCP from the dnsmasq instance running on the bridge network.
+The VM will have obtained its IP address automatically via DHCP from the dnsmasq instance running on
+the bridge network.
 
 ### Viewing VM Logs
 
@@ -563,12 +593,14 @@ Press Ctrl+] to detach
 ```
 
 This provides direct access to the VM's serial console. You can:
+
 - View boot messages
 - Login to the VM (use the default credentials listed above)
 - Execute commands
 - Press Ctrl+] to detach from the console
 
-Note: The console connects via a Unix socket created when the VM starts at `.qemu-compose/<vm-name>/console.sock`.
+Note: The console connects via a Unix socket created when the VM starts at
+`.qemu-compose/<vm-name>/console.sock`.
 
 ### Listing VMs
 
@@ -594,11 +626,15 @@ The `STATUS` column shows the current state of each VM:
 - **active**: VM is running (shown when SSH readiness check is skipped)
 - **unknown**: Status could not be determined
 
-The `IP ADDRESS` column shows the IP address for VMs using bridge networking. For user-mode networking VMs, it shows `-`.
+The `IP ADDRESS` column shows the IP address for VMs using bridge networking. For user-mode
+networking VMs, it shows `-`.
 
-The `DISK` column shows the allocated disk size for each VM instance. VMs that haven't been created yet show `-` for the disk size.
+The `DISK` column shows the allocated disk size for each VM instance. VMs that haven't been created
+yet show `-` for the disk size.
 
-**Note**: The `ps` command checks SSH connectivity in parallel using goroutines to determine if VMs are ready. This may add a small delay (up to 2 seconds per VM) but provides accurate status information.
+**Note**: The `ps` command checks SSH connectivity in parallel using goroutines to determine if VMs
+are ready. This may add a small delay (up to 2 seconds per VM) but provides accurate status
+information.
 
 ### Inspecting VMs
 
@@ -701,7 +737,8 @@ VM: ubuntu-vm
 
 The instance disks remain in `.qemu-compose/<vm-name>/` and can be reused when you run `up` again.
 
-For VMs using bridge networking, TAP devices are automatically cleaned up when the VM is stopped. Network bridges and dnsmasq instances remain running.
+For VMs using bridge networking, TAP devices are automatically cleaned up when the VM is stopped.
+Network bridges and dnsmasq instances remain running.
 
 ### Destroying VMs
 
@@ -724,9 +761,12 @@ VM: ubuntu-vm
 ✓ All VMs stopped and removed successfully
 ```
 
-This removes the `.qemu-compose/<vm-name>/` directories. Base images in `~/.local/share/qemu-compose/images/` are preserved.
+This removes the `.qemu-compose/<vm-name>/` directories. Base images in
+`~/.local/share/qemu-compose/images/` are preserved.
 
-Network bridges, dnsmasq instances, and subnet allocations are not automatically removed. They persist across VM lifecycles and can be reused by other VMs in the same project. To clean up network resources, manually delete `.qemu-compose/networks.json` and stop dnsmasq units:
+Network bridges, dnsmasq instances, and subnet allocations are not automatically removed. They
+persist across VM lifecycles and can be reused by other VMs in the same project. To clean up network
+resources, manually delete `.qemu-compose/networks.json` and stop dnsmasq units:
 
 ```bash
 $ systemctl --user stop qemu-compose-dnsmasq-myproject-default
@@ -790,7 +830,8 @@ $ QEMU_COMPOSE_DEBUG=true qemu-compose up
 **VM Instance Disks:**
 
 - Location: `./.qemu-compose/<vm-name>/`
-- Purpose: Store VM instance-specific disk images (COW overlays), cloud-init ISO, console socket, and SSH keys
+- Purpose: Store VM instance-specific disk images (COW overlays), cloud-init ISO, console socket,
+  and SSH keys
 - Scope: Project-local, one directory per VM
 
 **Project SSH Keys:**
@@ -820,19 +861,24 @@ $ QEMU_COMPOSE_DEBUG=true qemu-compose up
 ### VM Lifecycle
 
 1. **Pull**: Downloads base images to `~/.local/share/qemu-compose/images/`
-2. **Up**: 
+2. **Up**:
    - Generates project SSH key pair if it doesn't exist
    - Creates COW overlay disks in `.qemu-compose/<vm-name>/disk.qcow2`
    - Creates named volumes if they don't exist
    - Validates bind mount paths (relative to compose file location)
    - Generates cloud-init ISO with SSH key configuration and volume mounts
    - For user-mode networking: Allocates SSH port for the VM
-   - For bridge networking: Creates bridges and TAP devices, allocates subnets if needed, starts dnsmasq instances
+   - For bridge networking: Creates bridges and TAP devices, allocates subnets if needed, starts
+     dnsmasq instances
    - Starts VMs using `systemd-run`
-3. **SSH**: Connects to a running VM using the project SSH key and allocated port (user-mode networking only)
-4. **Console**: Connects to the VM's serial console via Unix socket at `.qemu-compose/<vm-name>/console.sock`
-5. **Inspect**: Displays detailed information about a VM's configuration, status, networks, volumes, and runtime state
-6. **Stop**: Stops VMs, cleans up TAP devices (bridge networking), but keeps instance disks, volumes, bridges, and dnsmasq instances
+3. **SSH**: Connects to a running VM using the project SSH key and allocated port (user-mode
+   networking only)
+4. **Console**: Connects to the VM's serial console via Unix socket at
+   `.qemu-compose/<vm-name>/console.sock`
+5. **Inspect**: Displays detailed information about a VM's configuration, status, networks, volumes,
+   and runtime state
+6. **Stop**: Stops VMs, cleans up TAP devices (bridge networking), but keeps instance disks,
+   volumes, bridges, and dnsmasq instances
 7. **Destroy**: Stops VMs and removes instance disks (`.qemu-compose/<vm-name>/`), but keeps volumes
 
 Each VM runs as a systemd user unit, providing:
@@ -842,7 +888,8 @@ Each VM runs as a systemd user unit, providing:
 - Resource control via cgroups
 - Clean shutdown handling
 
-Each network's dnsmasq instance runs as a systemd user unit (`qemu-compose-dnsmasq-<project>-<network>`), providing:
+Each network's dnsmasq instance runs as a systemd user unit
+(`qemu-compose-dnsmasq-<project>-<network>`), providing:
 
 - Automatic DHCP service for IP address assignment
 - DNS resolution for VM hostnames
@@ -858,7 +905,8 @@ The `ps` command determines VM readiness by:
 3. Testing SSH connectivity with a 2-second timeout (user-mode networking only)
 4. Running status checks in parallel using goroutines for better performance
 
-This provides accurate, real-time status information about whether VMs are ready to accept SSH connections.
+This provides accurate, real-time status information about whether VMs are ready to accept SSH
+connections.
 
 ### Network Architecture
 
@@ -895,10 +943,12 @@ This provides accurate, real-time status information about whether VMs are ready
 - Hostnames are resolved via dnsmasq's built-in DNS server
 
 Bridge and TAP device naming:
+
 - Bridges: `qc-<project>-<network>` (max 15 chars)
 - TAP devices: `tap-<project>-<vm>-<index>` (max 15 chars)
 
 dnsmasq unit naming:
+
 - Units: `qemu-compose-dnsmasq-<project>-<network>`
 
 ### Volume Architecture
@@ -925,8 +975,9 @@ dnsmasq unit naming:
 
 ## Development approach
 
-This project is an experiment in AI-assisted development. I implemented it using [Aider](https://aider.chat/) with
-the Claude Sonnet 4.5 model. This is my first time building a project this way.
+This project is an experiment in AI-assisted development. I implemented it using
+[Aider](https://aider.chat/) with the Claude Sonnet 4.5 model. This is my first time building a
+project this way.
 
 See the [`AGENTS.md`](AGENTS.md) file for the guidelines I provided to the AI during development.
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-*qemu-compose* supports two networking modes: user-mode (default) and bridge networking with DHCP.
+_qemu-compose_ supports two networking modes: user-mode (default) and bridge networking with DHCP.
 
 ## User-Mode Networking
 

@@ -2,7 +2,8 @@
 
 ## Overview
 
-*qemu-compose* supports two volume types: named volumes (persistent block storage) and bind mounts (9p filesystem sharing).
+_qemu-compose_ supports two volume types: named volumes (persistent block storage) and bind mounts
+(9p filesystem sharing).
 
 ## Named Volumes
 
@@ -114,6 +115,7 @@ volumes:
 ### Named Volumes
 
 Cloud-init generates `/etc/fstab` entries:
+
 ```
 /dev/vdb /mnt/data ext4 defaults 0 2
 /dev/vdc /var/lib/postgresql/data ext4 ro 0 2
