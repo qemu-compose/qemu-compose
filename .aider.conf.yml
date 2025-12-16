@@ -1,6 +1,10 @@
-model: openrouter/anthropic/claude-sonnet-4.5
-editor-model: openrouter/anthropic/claude-sonnet-4.5
-weak-model: openrouter/anthropic/claude-haiku-4.5
+#model: openrouter/anthropic/claude-haiku-4.5
+#editor-model: openrouter/anthropic/claude-haiku-4.5
+#weak-model: openrouter/anthropic/claude-haiku-4.5
+
+model: openrouter/deepseek/deepseek-v3.2
+weak-model: openrouter/deepseek/deepseek-v3.2
+
 
 auto-commits: false
 dirty-commits: false
