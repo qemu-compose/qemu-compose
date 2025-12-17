@@ -1282,6 +1282,53 @@ var doctorCmd = &cobra.Command{
             fmt.Printf("✅ dnsmasq: found at %s\n", dnsmasqPath)
         }
         
+        // Check if KVM is available (kernel module loaded, /dev/kvm exists)
+        logger.Println("Checking for KVM availability")
+        if _, err := os.Stat("/dev/kvm"); err == nil {
+            logger.Println("/dev/kvm exists")
+            // Check if user has read/write access to /dev/kvm
+            if file, err := os.OpenFile("/dev/kvm", os.O_RDWR, 0); err == nil {
+                file.Close()
+                fmt.Println("✅ KVM: /dev/kvm accessible with read/write permissions")
+            } else {
+                logger.Printf("/dev/kvm exists but cannot open for read/write: %v", err)
+                fmt.Println("⚠️  KVM: /dev/kvm exists but user lacks read/write access")
+                fmt.Println("    To fix: sudo usermod -a -G kvm $USER")
+                fmt.Println("    Then log out and log back in")
+                allOk = false
+            }
+        } else {
+            logger.Printf("/dev/kvm not found: %v", err)
+            fmt.Println("❌ KVM: /dev/kvm not found (KVM kernel module not loaded or not supported)")
+            fmt.Println("    Check BIOS virtualization settings (Intel VT-x / AMD-V)")
+            fmt.Println("    Load module: sudo modprobe kvm_intel (Intel) or sudo modprobe kvm_amd (AMD)")
+            allOk = false
+        }
+        
+        // Check if virtio modules are loaded (for 9p filesystem)
+        logger.Println("Checking for virtio modules")
+        virtioModules := []string{"9p", "9pnet", "9pnet_virtio"}
+        for _, mod := range virtioModules {
+            cmd := exec.Command("modprobe", "-n", "--dry-run", mod)
+            if err := cmd.Run(); err != nil {
+                logger.Printf("Module %s not available: %v", mod, err)
+                fmt.Printf("⚠️  virtio: module %s not available (9p bind mounts may not work)\n", mod)
+                // Not a fatal error, just a warning
+            } else {
+                logger.Printf("Module %s available", mod)
+            }
+        }
+        
+        // Check if nbd module is loaded (for volume formatting)
+        logger.Println("Checking for nbd module")
+        nbdCmd := exec.Command("modprobe", "-n", "--dry-run", "nbd")
+        if err := nbdCmd.Run(); err != nil {
+            logger.Printf("Module nbd not available: %v", err)
+            fmt.Println("⚠️  nbd: module not available (named volume formatting may not work)")
+        } else {
+            logger.Println("Module nbd available")
+        }
+        
         // Check for CAP_NET_ADMIN capability or ability to create bridges
         logger.Println("Checking for CAP_NET_ADMIN capability")
         

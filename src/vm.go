@@ -271,11 +271,14 @@ func buildQEMUCommand(vmName string, vm VM, instanceDiskPath string, cloudInitIS
     args := []string{
         "qemu-system-x86_64",
         "-name", vmName,
+        "-machine", "type=q35,accel=kvm",
+        "-cpu", "host",
         "-m", fmt.Sprintf("%d", vm.Memory),
         "-smp", fmt.Sprintf("%d", vm.CPU),
         "-drive", fmt.Sprintf("file=%s,format=qcow2,if=virtio", instanceDiskPath),
         "-nographic",
         "-serial", fmt.Sprintf("unix:%s,server,nowait", socketPath),
+        "-device", "virtio-balloon",
     }
     
     // Add volume disks and bind mounts
