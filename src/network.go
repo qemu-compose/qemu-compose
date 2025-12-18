@@ -184,7 +184,7 @@ func getVMIPAddress(vmName string, vm VM) string {
 	// Parse logs for DHCP REPLY lines
 	// Format: "dnsmasq-dhcp[PID]: DHCPREPLY(bridge) IP MAC hostname"
 	lines := strings.Split(string(output), "\n")
-	
+
 	// Get TAP device MAC address to match against DHCP leases
 	tapName := getTAPName(vmName, 0)
 	tap, err := netlink.LinkByName(tapName)
@@ -192,7 +192,7 @@ func getVMIPAddress(vmName string, vm VM) string {
 		logger.Printf("Failed to get TAP device %s: %v", tapName, err)
 		return ""
 	}
-	
+
 	tapMAC := tap.Attrs().HardwareAddr.String()
 	logger.Printf("Looking for DHCP lease for TAP %s with MAC %s", tapName, tapMAC)
 
@@ -207,7 +207,7 @@ func getVMIPAddress(vmName string, vm VM) string {
 		// Format examples:
 		// "dnsmasq-dhcp[123]: DHCPREPLY(qc-proj-net) 172.16.0.10 52:54:00:12:34:56"
 		// "dnsmasq-dhcp[123]: DHCPACK(qc-proj-net) 172.16.0.10 52:54:00:12:34:56 hostname"
-		
+
 		parts := strings.Fields(line)
 		for i, part := range parts {
 			// Look for IP address pattern
@@ -250,15 +250,15 @@ func startDnsmasq(networkName string, subnet string) error {
 	if ip4 == nil {
 		return fmt.Errorf("subnet %s is not a valid IPv4 address", subnet)
 	}
-	
+
 	startIP := make(net.IP, 4)
 	endIP := make(net.IP, 4)
 	gateway := make(net.IP, 4)
-	
+
 	copy(startIP, ip4)
 	copy(endIP, ip4)
 	copy(gateway, ip4)
-	
+
 	startIP[3] = 10
 	endIP[3] = 250
 	gateway[3] = 1
@@ -287,8 +287,8 @@ func startDnsmasq(networkName string, subnet string) error {
 		"--dhcp-option=1," + netmask,          // Subnet mask
 		"--dhcp-option=3," + gateway.String(), // Gateway
 		"--dhcp-option=6," + gateway.String(), // DNS server (bridge IP)
-		"--port=0",                             // Disable DNS
-		"--leasefile-ro",                       // Don't write lease file (read-only mode)
+		"--port=0",                            // Disable DNS
+		"--leasefile-ro",                      // Don't write lease file (read-only mode)
 		"--no-daemon",
 		"--log-dhcp",
 		"--log-facility=-", // Log to stderr (captured by systemd)
